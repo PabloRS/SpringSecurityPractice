@@ -22,10 +22,15 @@ public class MainController {
         return "Main controller";
     }
 
+    @GetMapping("/count")
+    public String getCount() {
+        metricService.increaseCount("/count", 200);
+        return "Count";
+    }
+
     @GetMapping("/status-metric")
     @ResponseBody
     public Map getStatusMetric() {
-        Map<Integer, Integer> response = metricService.getStatusMetric();
-        return response;
+        return metricService.getStatusMetric();
     }
 }

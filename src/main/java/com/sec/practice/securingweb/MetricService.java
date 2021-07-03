@@ -8,22 +8,30 @@ import java.util.concurrent.ConcurrentMap;
 
 @Service
 public class MetricService {
-    private ConcurrentMap<Integer, Integer> statusMetric;
+    private ConcurrentMap<String, ConcurrentHashMap<Integer, Integer>> metricMap;
 
     public MetricService() {
-        statusMetric = new ConcurrentHashMap<>();
+        this.metricMap = new ConcurrentHashMap<>();
     }
 
     public void increaseCount(String request, int status) {
-        Integer statusCount = statusMetric.get(status);
-        if(statusCount == null) {
-            statusMetric.put(status, 1);
-        } else {
-            statusMetric.put(status, statusCount+1);
+        ConcurrentHashMap<Integer, Integer> statusMap = metricMap.get(request);
+        if(statusMap == null) {
+            statusMap = new ConcurrentHashMap<>();
         }
+
+        Integer count = statusMap.get(status);
+        if(count == null) {
+            count = 1;
+        } else {
+            count++;
+        }
+
+        statusMap.put(status, count);
+        metricMap.put(request, statusMap);
     }
 
     public Map getStatusMetric() {
-        return statusMetric;
+        return metricMap;
     }
 }
